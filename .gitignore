@@ -1,0 +1,16 @@
+# Flutter / Android
+.dart_tool/
+.packages
+.pub/
+build/
+android/.gradle/
+android/local.properties
+
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+**/*SSID*
+**/*password*
+**/*token*
+**/*secret*
