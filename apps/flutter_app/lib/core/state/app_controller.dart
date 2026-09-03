@@ -28,6 +28,11 @@ class AppController extends ChangeNotifier {
       health?.connected == true &&
       health?.balanceAvailable == true;
 
+  void setNotice(String message) {
+    notice = message;
+    notifyListeners();
+  }
+
   String get connectionLabel {
     switch (connectionState) {
       case BrokerConnectionState.notConfigured:

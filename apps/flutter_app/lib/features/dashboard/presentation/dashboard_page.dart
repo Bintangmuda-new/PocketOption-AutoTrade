@@ -96,8 +96,7 @@ class _DashboardPageState extends State<DashboardPage> {
   void _selectNav(int index) {
     setState(() => _selectedNav = index);
     if (index != 0) {
-      controller.notice = '${_navItems[index].label} siap dibuka setelah modul backend tersedia.';
-      controller.notifyListeners();
+      controller.setNotice('${_navItems[index].label} siap dibuka setelah modul backend tersedia.');
     }
   }
 
@@ -248,7 +247,7 @@ class _ModeButton extends StatelessWidget {
         decoration: BoxDecoration(
           color: selected ? (danger ? const Color(0xFFD33D4C) : const Color(0xFF2188DF)) : Colors.transparent,
           borderRadius: BorderRadius.circular(4),
-          boxShadow: selected ? [BoxShadow(color: (danger ? AppTheme.red : AppTheme.cyan).withOpacity(.22), blurRadius: 12)] : null,
+          boxShadow: selected ? [BoxShadow(color: (danger ? AppTheme.red : AppTheme.cyan).withValues(alpha: .22), blurRadius: 12)] : null,
         ),
         child: Row(mainAxisSize: MainAxisSize.min, children: [Text(label, style: TextStyle(color: selected ? Colors.white : AppTheme.muted, fontSize: 11, fontWeight: FontWeight.w700, letterSpacing: .6)), if (danger) ...[const SizedBox(width: 4), Icon(Icons.warning_amber_rounded, size: 13, color: AppTheme.red)]]),
       ),
@@ -662,7 +661,7 @@ class _Panel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: padding,
-      decoration: BoxDecoration(color: AppTheme.surface.withOpacity(.96), border: Border.all(color: AppTheme.border), borderRadius: BorderRadius.circular(6), boxShadow: const [BoxShadow(color: Color(0x33000000), blurRadius: 24, offset: Offset(0, 10))]),
+      decoration: BoxDecoration(color: AppTheme.surface.withValues(alpha: .96), border: Border.all(color: AppTheme.border), borderRadius: BorderRadius.circular(6), boxShadow: const [BoxShadow(color: Color(0x33000000), blurRadius: 24, offset: Offset(0, 10))]),
       child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [if (title != null) ...[Row(children: [Text(title!, style: TextStyle(color: titleColor, fontSize: 12, fontWeight: FontWeight.w700, letterSpacing: .4)), const Spacer(), if (meta != null) Text(meta!, style: const TextStyle(color: Color(0xFF68798D), fontSize: 8, letterSpacing: .6)), if (trailing != null) ...[const SizedBox(width: 5), trailing!]]), const SizedBox(height: 9)], child]),
     );
   }
@@ -679,7 +678,7 @@ class _Metric extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(width: 142, height: 70, padding: const EdgeInsets.all(9), decoration: BoxDecoration(color: const Color(0xC909121C), border: Border.all(color: const Color(0x2E71A2C9)), borderRadius: BorderRadius.circular(4)), child: Stack(children: [Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(label, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Color(0xFF97A8BA), fontSize: 8, letterSpacing: .3)), const SizedBox(height: 7), Text(value, style: TextStyle(color: tone, fontSize: 17, fontWeight: FontWeight.w600, fontFamily: 'monospace')), const SizedBox(height: 3), Text(note, style: TextStyle(color: tone == AppTheme.text ? AppTheme.muted : tone, fontSize: 8, fontFamily: 'monospace'))]), if (icon != null) Positioned(right: 0, bottom: 0, child: Icon(icon, color: AppTheme.cyan.withOpacity(.7), size: 17))]));
+    return Container(width: 142, height: 70, padding: const EdgeInsets.all(9), decoration: BoxDecoration(color: const Color(0xC909121C), border: Border.all(color: const Color(0x2E71A2C9)), borderRadius: BorderRadius.circular(4)), child: Stack(children: [Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(label, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Color(0xFF97A8BA), fontSize: 8, letterSpacing: .3)), const SizedBox(height: 7), Text(value, style: TextStyle(color: tone, fontSize: 17, fontWeight: FontWeight.w600, fontFamily: 'monospace')), const SizedBox(height: 3), Text(note, style: TextStyle(color: tone == AppTheme.text ? AppTheme.muted : tone, fontSize: 8, fontFamily: 'monospace'))]), if (icon != null) Positioned(right: 0, bottom: 0, child: Icon(icon, color: AppTheme.cyan.withValues(alpha: .7), size: 17))]));
   }
 }
 
@@ -732,7 +731,7 @@ class _DirectionTag extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final call = direction == 'CALL';
-    return Container(padding: EdgeInsets.symmetric(horizontal: strong ? 8 : 5, vertical: strong ? 5 : 3), decoration: BoxDecoration(color: (call ? AppTheme.green : AppTheme.red).withOpacity(.14), borderRadius: BorderRadius.circular(4)), child: Text(strong ? 'STRONG $direction' : direction, style: TextStyle(color: call ? AppTheme.green : AppTheme.red, fontSize: strong ? 10 : 8, fontWeight: FontWeight.w700, letterSpacing: .3)));
+    return Container(padding: EdgeInsets.symmetric(horizontal: strong ? 8 : 5, vertical: strong ? 5 : 3), decoration: BoxDecoration(color: (call ? AppTheme.green : AppTheme.red).withValues(alpha: .14), borderRadius: BorderRadius.circular(4)), child: Text(strong ? 'STRONG $direction' : direction, style: TextStyle(color: call ? AppTheme.green : AppTheme.red, fontSize: strong ? 10 : 8, fontWeight: FontWeight.w700, letterSpacing: .3)));
   }
 }
 
@@ -795,7 +794,11 @@ class _ChartGridPainter extends CustomPainter {
     for (var i = 0; i <= 20; i++) {
       final x = size.width * i / 20;
       final y = size.height * (.64 - math.sin(i / 2.7) * .08 - i * .008);
-      if (i == 0) path.moveTo(x, y); else path.lineTo(x, y);
+      if (i == 0) {
+        path.moveTo(x, y);
+      } else {
+        path.lineTo(x, y);
+      }
     }
     canvas.drawPath(path, line);
   }
