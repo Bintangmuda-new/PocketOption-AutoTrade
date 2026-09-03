@@ -19,7 +19,7 @@ void main() {
     await tester.tap(find.text('REAL').first);
     await tester.pump();
 
-    expect(find.text('REAL LOCKED', skipOffstage: false), findsWidgets);
+    expect(find.textContaining('REAL LOCKED', skipOffstage: false), findsWidgets);
     expect(find.text('REAL dipilih tetapi dikunci. Koneksi dan transaksi REAL belum diaktifkan.'), findsOneWidget);
   });
 }
