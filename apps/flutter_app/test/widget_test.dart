@@ -24,7 +24,7 @@ void main() {
     addTearDown(tester.view.reset);
     await tester.pumpWidget(const BMFutureApp(config: AppConfig(apiBaseUrl: '')));
 
-    await tester.tap(find.text('REAL').first);
+    await tester.tap(find.byKey(const ValueKey('real-mode-button')));
     await tester.pump();
 
     expect(find.textContaining('REAL LOCKED', skipOffstage: false), findsWidgets);

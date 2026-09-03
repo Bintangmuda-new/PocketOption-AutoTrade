@@ -161,17 +161,37 @@ class _Header extends StatelessWidget {
             const SizedBox(width: 2),
           ],
           const _Brand(),
-          const Spacer(),
-          _ModeSwitcher(controller: controller),
           if (wide) ...[
-            const SizedBox(width: 18),
-            const _RealWarning(),
-            const SizedBox(width: 18),
-            _HeaderStatus(label: 'CONNECTION', value: controller.connectionLabel, tone: _statusTone(controller.connectionState), dot: true),
-            _HeaderStatus(label: 'BALANCE', value: _balanceText(health), tone: AppTheme.text),
-            _HeaderStatus(label: 'SERVER', value: controller.isDemoConnected ? 'DEMO BROKER' : 'NOT CONNECTED', tone: controller.isDemoConnected ? AppTheme.green : AppTheme.amber, dot: true),
-            _HeaderStatus(label: 'AI ENGINE', value: _aiLabel(controller), tone: controller.aiHealth?.available == true ? AppTheme.green : AppTheme.amber, dot: true),
-            _HeaderStatus(label: 'AUTO TRADE', value: controller.autoTradeStatus?.label ?? 'LOCKED', tone: _autoTradeTone(controller), dot: true),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Row(
+                children: [
+                  const Spacer(),
+                  _ModeSwitcher(controller: controller),
+                  const SizedBox(width: 12),
+                  Flexible(
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const _RealWarning(),
+                          const SizedBox(width: 12),
+                          _HeaderStatus(label: 'CONNECTION', value: controller.connectionLabel, tone: _statusTone(controller.connectionState), dot: true),
+                          _HeaderStatus(label: 'BALANCE', value: _balanceText(health), tone: AppTheme.text),
+                          _HeaderStatus(label: 'SERVER', value: controller.isDemoConnected ? 'DEMO BROKER' : 'NOT CONNECTED', tone: controller.isDemoConnected ? AppTheme.green : AppTheme.amber, dot: true),
+                          _HeaderStatus(label: 'AI ENGINE', value: _aiLabel(controller), tone: controller.aiHealth?.available == true ? AppTheme.green : AppTheme.amber, dot: true),
+                          _HeaderStatus(label: 'AUTO TRADE', value: controller.autoTradeStatus?.label ?? 'LOCKED', tone: _autoTradeTone(controller), dot: true),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ] else ...[
+            const Spacer(),
+            _ModeSwitcher(controller: controller),
           ],
         ],
       ),
@@ -219,8 +239,8 @@ class _ModeSwitcher extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          _ModeButton(label: 'DEMO', selected: controller.mode == AccountMode.demo, onTap: () => controller.selectMode(AccountMode.demo)),
-          _ModeButton(label: 'REAL', selected: controller.mode == AccountMode.real, danger: true, onTap: () => controller.selectMode(AccountMode.real)),
+          _ModeButton(key: const ValueKey('demo-mode-button'), label: 'DEMO', selected: controller.mode == AccountMode.demo, onTap: () => controller.selectMode(AccountMode.demo)),
+          _ModeButton(key: const ValueKey('real-mode-button'), label: 'REAL', selected: controller.mode == AccountMode.real, danger: true, onTap: () => controller.selectMode(AccountMode.real)),
         ],
       ),
     );
@@ -228,7 +248,7 @@ class _ModeSwitcher extends StatelessWidget {
 }
 
 class _ModeButton extends StatelessWidget {
-  const _ModeButton({required this.label, required this.selected, required this.onTap, this.danger = false});
+  const _ModeButton({super.key, required this.label, required this.selected, required this.onTap, this.danger = false});
 
   final String label;
   final bool selected;
