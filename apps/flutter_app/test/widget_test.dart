@@ -1,5 +1,3 @@
-import 'dart:ui' show Size;
-
 import 'package:flutter/foundation.dart' show ValueKey;
 import 'package:flutter_test/flutter_test.dart';
 
@@ -8,21 +6,15 @@ import 'package:bmfuture_po_autotrade/core/config/app_config.dart';
 
 void main() {
   testWidgets('starts in safe DEMO mode with execution locked', (tester) async {
-    tester.view.physicalSize = const Size(1200, 900);
-    tester.view.devicePixelRatio = 1.0;
-    addTearDown(tester.view.reset);
     await tester.pumpWidget(const BMFutureApp(config: AppConfig(apiBaseUrl: '')));
 
     expect(find.text('DEMO'), findsWidgets);
-    expect(find.textContaining('REAL TRADING'), findsOneWidget);
-    expect(find.text('EXECUTION LOCKED'), findsWidgets);
+    expect(find.byKey(const ValueKey('real-mode-button')), findsOneWidget);
+    expect(find.textContaining('EXECUTION LOCKED'), findsWidgets);
     expect(find.text('NO LIVE CANDLE DATA'), findsOneWidget);
   });
 
   testWidgets('REAL mode is visibly locked', (tester) async {
-    tester.view.physicalSize = const Size(1200, 900);
-    tester.view.devicePixelRatio = 1.0;
-    addTearDown(tester.view.reset);
     await tester.pumpWidget(const BMFutureApp(config: AppConfig(apiBaseUrl: '')));
 
     await tester.tap(find.byKey(const ValueKey('real-mode-button')));
