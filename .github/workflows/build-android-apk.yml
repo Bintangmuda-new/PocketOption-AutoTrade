@@ -1,0 +1,90 @@
+name: Build BM Future Android APK
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: android-apk-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Analyze, test, and package release APK
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: apps/flutter_app
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Install Flutter stable
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.29.2
+          channel: stable
+          cache: true
+
+      - name: Generate Android runner
+        run: flutter create --platforms=android --project-name bmfuture_po_autotrade --org com.bmfuture .
+
+      - name: Configure application label and network permission
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          manifest = Path('android/app/src/main/AndroidManifest.xml')
+          text = manifest.read_text(encoding='utf-8')
+          if 'android.permission.INTERNET' not in text:
+              text = text.replace(
+                  'xmlns:android="http://schemas.android.com/apk/res/android">',
+                  'xmlns:android="http://schemas.android.com/apk/res/android">\n'
+                  '    <uses-permission android:name="android.permission.INTERNET" />',
+                  1,
+              )
+          text = text.replace('android:label="bmfuture_po_autotrade"', 'android:label="BM Future PO AutoTrade AI"')
+          text = text.replace('android:label="bmfuture_po_autotrade"', 'android:label="BM Future PO AutoTrade AI"')
+          if 'android:usesCleartextTraffic' not in text:
+              text = text.replace(
+                  'android:label="BM Future PO AutoTrade AI"',
+                  'android:label="BM Future PO AutoTrade AI"\n'
+                  '        android:usesCleartextTraffic="true"',
+                  1,
+              )
+          manifest.write_text(text, encoding='utf-8')
+          PY
+
+      - name: Resolve packages
+        run: flutter pub get
+
+      - name: Static analysis
+        run: flutter analyze
+
+      - name: Unit and widget tests
+        run: flutter test --coverage
+
+      - name: Build release APK
+        run: flutter build apk --release --dart-define=API_BASE_URL=
+
+      - name: Verify APK exists and record checksum
+        run: |
+          test -s build/app/outputs/flutter-apk/app-release.apk
+          sha256sum build/app/outputs/flutter-apk/app-release.apk | tee build/app/outputs/flutter-apk/SHA256SUMS.txt
+          ls -lh build/app/outputs/flutter-apk/app-release.apk
+
+      - name: Upload installable APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: bmfuture-po-autotrade-android-release
+          path: |
+            apps/flutter_app/build/app/outputs/flutter-apk/app-release.apk
+            apps/flutter_app/build/app/outputs/flutter-apk/SHA256SUMS.txt
+          if-no-files-found: error
+          retention-days: 30
