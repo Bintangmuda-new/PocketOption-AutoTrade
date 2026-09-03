@@ -10,7 +10,7 @@ void main() {
 
     expect(find.text('DEMO'), findsWidgets);
     expect(find.byKey(const ValueKey('real-mode-button')), findsOneWidget);
-    expect(find.textContaining('EXECUTION LOCKED'), findsWidgets);
+    expect(find.text('EXECUTION LOCKED', skipOffstage: false), findsWidgets);
     expect(find.text('NO LIVE CANDLE DATA'), findsOneWidget);
   });
 
