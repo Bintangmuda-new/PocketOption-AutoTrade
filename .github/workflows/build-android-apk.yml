@@ -50,7 +50,6 @@ jobs:
                   1,
               )
           text = text.replace('android:label="bmfuture_po_autotrade"', 'android:label="BM Future PO AutoTrade AI"')
-          text = text.replace('android:label="bmfuture_po_autotrade"', 'android:label="BM Future PO AutoTrade AI"')
           if 'android:usesCleartextTraffic' not in text:
               text = text.replace(
                   'android:label="BM Future PO AutoTrade AI"',
@@ -76,7 +75,10 @@ jobs:
       - name: Verify APK exists and record checksum
         run: |
           test -s build/app/outputs/flutter-apk/app-release.apk
-          sha256sum build/app/outputs/flutter-apk/app-release.apk | tee build/app/outputs/flutter-apk/SHA256SUMS.txt
+          (
+            cd build/app/outputs/flutter-apk
+            sha256sum app-release.apk | tee SHA256SUMS.txt
+          )
           ls -lh build/app/outputs/flutter-apk/app-release.apk
 
       - name: Upload installable APK
